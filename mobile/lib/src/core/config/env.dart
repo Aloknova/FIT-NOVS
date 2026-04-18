@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 
 class AppEnv {
   static const appName = String.fromEnvironment(
