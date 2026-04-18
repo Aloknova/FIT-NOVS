@@ -105,39 +105,6 @@ class DietRepository {
     return DietPlan.fromMap(upsertResponse);
   }
 
-  int _estimateCalories(UserProfile profile) {
-    final weight = profile.weightKg ?? 70;
-    final height = profile.heightCm ?? 170;
-    final age = profile.age ?? 25;
-    final gender = (profile.gender ?? '').toLowerCase();
-
-    final base = gender == 'female'
-        ? (10 * weight) + (6.25 * height) - (5 * age) - 161
-        : (10 * weight) + (6.25 * height) - (5 * age) + 5;
-
-    final multiplier = switch ((profile.activityLevel ?? '').toLowerCase()) {
-      'highly active' => 1.75,
-      'beginner' => 1.3,
-      _ => 1.55,
-    };
-
-    var result = base * multiplier;
-    switch ((profile.fitnessGoal ?? '').toLowerCase()) {
-      case 'lose fat':
-        result -= 350;
-        break;
-      case 'build muscle':
-        result += 250;
-        break;
-      case 'improve endurance':
-        result += 150;
-        break;
-    }
-
-    final rounded = (result / 50).round() * 50;
-    return rounded.clamp(1500, 3600).toInt();
-  }
-
   String _dateOnly(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
