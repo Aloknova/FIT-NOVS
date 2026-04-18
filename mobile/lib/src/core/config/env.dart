@@ -16,11 +16,8 @@ class AppEnv {
     const defaultUrl = String.fromEnvironment('API_BASE_URL', defaultValue: '');
     if (defaultUrl.isNotEmpty) return defaultUrl;
     
-    // Fallback for emulators
-    if (!kIsWeb && Platform.isAndroid) {
-      return 'http://10.0.2.2:8080';
-    }
-    return 'http://localhost:8080';
+    // Fallback for production
+    return 'https://fitnova-backend-production.up.railway.app';
   }
 
   static const supabaseUrl = String.fromEnvironment(

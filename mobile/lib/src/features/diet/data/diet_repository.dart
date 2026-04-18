@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/config/env.dart';
 import '../../../core/providers/supabase_providers.dart';
 import '../../profile/domain/user_profile.dart';
 import '../domain/diet_plan.dart';
@@ -38,28 +41,55 @@ class DietRepository {
     required DateTime date,
     required UserProfile profile,
     bool forceRegenerate = false,
-    List<Map<String, dynamic>>? aiMeals,
   }) async {
-    if (!forceRegenerate && aiMeals == null) {
+    if (!forceRegenerate) {
       final existing = await fetchPlanForDate(userId, date);
       if (existing != null) {
         return existing;
       }
     }
 
-    final calorieTarget = _estimateCalories(profile);
-    final proteinG = ((profile.weightKg ?? 70) * 1.8).roundToDouble();
-    final fatG = ((profile.weightKg ?? 70) * 0.8).roundToDouble();
-    final carbsG = (((calorieTarget - (proteinG * 4) - (fatG * 9)) / 4))
-        .clamp(120, 420)
-        .roundToDouble();
-
-    final meals = aiMeals ?? _buildMeals(
-      goal: profile.fitnessGoal ?? 'Stay consistent',
-      calorieTarget: calorieTarget,
-      proteinG: proteinG,
-      date: date,
+    final response = await http.post(
+      Uri.parse('${AppEnv.apiBaseUrl}/api/ai/diet-plan'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'userId': userId,
+        'profile': {
+          'goal': profile.fitnessGoal,
+          'age': profile.age,
+          'gender': profile.gender,
+          'weight_kg': profile.weightKg,
+          'height_cm': profile.heightCm,
+          'activity_level': profile.activityLevel,
+        },
+      }),
     );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to generate diet plan: ${response.body}');
+    }
+
+    final aiPlan = jsonDecode(response.body) as Map<String, dynamic>;
+
+    final upsertResponse = await _client
+        .from('diet_plans')
+        .upsert({
+          'user_id': userId,
+          'title': aiPlan['title'] ?? 'Vegetarian Daily Plan',
+          'plan_date': _dateOnly(date),
+          'calorie_target': aiPlan['calorie_target'],
+          'protein_g': aiPlan['protein_g'],
+          'carbs_g': aiPlan['carbs_g'],
+          'fat_g': aiPlan['fat_g'],
+          'meals': aiPlan['meals'],
+          'source': 'ai',
+          'is_active': true,
+        }, onConflict: 'user_id,plan_date')
+        .select()
+        .single();
+
+    return DietPlan.fromMap(upsertResponse);
+  }
 
     final response = await _client
         .from('diet_plans')

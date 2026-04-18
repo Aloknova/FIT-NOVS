@@ -55,246 +55,216 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final isBusy = authState.isLoading;
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF352258),
-                    AppBranding.accent,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Minimal Logo
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppBranding.accent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.auto_awesome,
+                    size: 48,
+                    color: AppBranding.accent,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppBranding.appName,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
+                const SizedBox(height: 24),
+                Text(
+                  AppBranding.appName,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -1,
+                    color: theme.colorScheme.onSurface,
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Your AI fitness coach, daily planner, habit engine, and progress tracker in one Android app.',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      height: 1.45,
-                    ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your minimal AI fitness companion.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(height: 18),
-                  const Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
+                ),
+                const SizedBox(height: 48),
+                // Form Container
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 40,
+                        offset: const Offset(0, 20),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _HeroChip(label: 'AI coaching'),
-                      _HeroChip(label: 'Workout plans'),
-                      _HeroChip(label: 'Habit streaks'),
-                      _HeroChip(label: 'Google Fit'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SegmentedButton<AuthMode>(
-                    showSelectedIcon: false,
-                    segments: const [
-                      ButtonSegment<AuthMode>(
-                        value: AuthMode.signIn,
-                        label: Text('Sign in'),
-                      ),
-                      ButtonSegment<AuthMode>(
-                        value: AuthMode.signUp,
-                        label: Text('Create account'),
-                      ),
-                    ],
-                    selected: {_mode},
-                    onSelectionChanged: isBusy
-                        ? null
-                        : (selection) {
-                            setState(() {
-                              _mode = selection.first;
-                            });
-                          },
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    _mode == AuthMode.signIn
-                        ? 'Welcome back'
-                        : 'Start your FitNova journey',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _mode == AuthMode.signIn
-                        ? 'Sign in to resume your goals, streaks, and daily AI plan.'
-                        : 'Create your account, then we will build your personalized onboarding profile.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        if (_mode == AuthMode.signUp) ...[
-                          TextFormField(
-                            controller: _nameController,
-                            enabled: !isBusy,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(
-                              labelText: 'Full name',
-                              prefixIcon: Icon(Icons.person_outline),
-                            ),
-                            validator: (value) {
-                              if (_mode == AuthMode.signUp &&
-                                  (value == null || value.trim().length < 2)) {
-                                return 'Enter your full name.';
-                              }
-
-                              return null;
-                            },
+                      SegmentedButton<AuthMode>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          ButtonSegment<AuthMode>(
+                            value: AuthMode.signIn,
+                            label: Text('Sign in'),
                           ),
-                          const SizedBox(height: 14),
+                          ButtonSegment<AuthMode>(
+                            value: AuthMode.signUp,
+                            label: Text('Create account'),
+                          ),
                         ],
-                        TextFormField(
-                          controller: _emailController,
-                          enabled: !isBusy,
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: const InputDecoration(
-                            labelText: 'Email address',
-                            prefixIcon: Icon(Icons.mail_outline),
-                          ),
-                          validator: (value) {
-                            final email = value?.trim() ?? '';
-                            if (email.isEmpty || !email.contains('@')) {
-                              return 'Enter a valid email address.';
-                            }
-
-                            return null;
-                          },
+                        selected: {_mode},
+                        onSelectionChanged: isBusy
+                            ? null
+                            : (selection) {
+                                setState(() {
+                                  _mode = selection.first;
+                                });
+                              },
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        _mode == AuthMode.signIn
+                            ? 'Welcome back'
+                            : 'Start your journey',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
                         ),
-                        const SizedBox(height: 14),
-                        TextFormField(
-                          controller: _passwordController,
-                          enabled: !isBusy,
-                          obscureText: true,
-                          autofillHints: _mode == AuthMode.signIn
-                              ? const [AutofillHints.password]
-                              : const [
-                                  AutofillHints.newPassword,
-                                  AutofillHints.password,
-                                ],
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock_outline),
-                          ),
-                          validator: (value) {
-                            if ((value?.length ?? 0) < 6) {
-                              return 'Use at least 6 characters.';
-                            }
-
-                            return null;
-                          },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _mode == AuthMode.signIn
+                            ? 'Sign in to resume your goals and daily AI plan.'
+                            : 'Create your account to get started.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(height: 18),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton(
-                            onPressed: isBusy ? null : _submit,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              child: Text(
-                                isBusy
-                                    ? 'Please wait...'
-                                    : _mode == AuthMode.signIn
-                                        ? 'Sign in'
-                                        : 'Create account',
+                      ),
+                      const SizedBox(height: 24),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            if (_mode == AuthMode.signUp) ...[
+                              TextFormField(
+                                controller: _nameController,
+                                enabled: !isBusy,
+                                textCapitalization: TextCapitalization.words,
+                                decoration: const InputDecoration(
+                                  labelText: 'Full name',
+                                  prefixIcon: Icon(Icons.person_outline),
+                                ),
+                                validator: (value) {
+                                  if (_mode == AuthMode.signUp &&
+                                      (value == null || value.trim().length < 2)) {
+                                    return 'Enter your full name.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                            TextFormField(
+                              controller: _emailController,
+                              enabled: !isBusy,
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: const [AutofillHints.email],
+                              decoration: const InputDecoration(
+                                labelText: 'Email address',
+                                prefixIcon: Icon(Icons.mail_outline),
+                              ),
+                              validator: (value) {
+                                final email = value?.trim() ?? '';
+                                if (email.isEmpty || !email.contains('@')) {
+                                  return 'Enter a valid email address.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _passwordController,
+                              enabled: !isBusy,
+                              obscureText: true,
+                              autofillHints: _mode == AuthMode.signIn
+                                  ? const [AutofillHints.password]
+                                  : const [
+                                      AutofillHints.newPassword,
+                                      AutofillHints.password,
+                                    ],
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: Icon(Icons.lock_outline),
+                              ),
+                              validator: (value) {
+                                if ((value?.length ?? 0) < 6) {
+                                  return 'Use at least 6 characters.';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: isBusy ? null : _submit,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  child: Text(
+                                    isBusy
+                                        ? 'Please wait...'
+                                        : _mode == AuthMode.signIn
+                                            ? 'Sign in'
+                                            : 'Create account',
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: theme.colorScheme.outlineVariant,
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          'or',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: theme.colorScheme.outlineVariant)),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Text('or', style: TextStyle(fontSize: 12)),
                           ),
-                        ),
+                          Expanded(child: Divider(color: theme.colorScheme.outlineVariant)),
+                        ],
                       ),
-                      Expanded(
-                        child: Divider(
-                          color: theme.colorScheme.outlineVariant,
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: isBusy ? null : _signInWithGoogle,
+                          icon: const Icon(Icons.g_mobiledata, size: 28),
+                          label: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            child: Text('Continue with Google'),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: isBusy ? null : _signInWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata),
-                      label: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text('Continue with Google'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Google sign-in opens your browser and returns to the app using the configured deep link.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (_mode == AuthMode.signUp) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      'If email confirmation is enabled in Supabase, you will get a verification email before the first login.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -370,29 +340,5 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     } catch (_) {
       // Errors are surfaced through the provider listener.
     }
-  }
-}
-
-class _HeroChip extends StatelessWidget {
-  const _HeroChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-      ),
-    );
   }
 }

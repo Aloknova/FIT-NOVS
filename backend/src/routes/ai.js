@@ -80,6 +80,64 @@ router.post('/chat', async (request, response) => {
   }
 });
 
+const dietSchema = z.object({
+  userId: z.string().optional(),
+  profile: z.object({
+    goal: z.string().optional(),
+    fitness_goal: z.string().optional(),
+    age: z.number().int().positive().optional(),
+    gender: z.string().optional(),
+    weight_kg: z.number().optional(),
+    height_cm: z.number().optional(),
+    activity_level: z.string().optional(),
+  }).passthrough().default({}),
+});
+
+router.post('/diet-plan', async (request, response) => {
+  const parsed = dietSchema.safeParse(request.body);
+  if (!parsed.success) {
+    return response.status(400).json({ error: 'Invalid payload', details: parsed.error.flatten() });
+  }
+
+  const start = Date.now();
+  const { profile } = parsed.data;
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey) return response.status(500).json({ error: 'Groq API key not configured' });
+
+  try {
+    const systemPrompt = [
+      'You are a professional nutrition coach.',
+      'Generate a 100% vegetarian daily meal plan.',
+      'Return JSON ONLY.',
+      'JSON structure: {"title": "...", "calorie_target": 2000, "protein_g": 150, "carbs_g": 200, "fat_g": 60, "meals": [{"type": "Breakfast", "food": "...", "calories": 500, "protein_g": 30}, ...]}',
+      'The plan must be tailored to this profile: ' + JSON.stringify(profile),
+      'All food must be vegetarian (plant-based, dairy, eggs are allowed). No meat or fish.',
+    ].join(' ');
+
+    const payload = {
+      model: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
+      temperature: 0.3,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: 'Generate my daily vegetarian diet plan for today.' },
+      ],
+    };
+
+    const { rawResponse } = await callProvider({ apiKey, payload });
+    const content = rawResponse?.choices?.[0]?.message?.content;
+    const plan = parseAiJson(content);
+
+    return response.json({
+      ...plan,
+      latency_ms: Date.now() - start,
+    });
+  } catch (error) {
+    return response.status(500).json({ error: 'Failed to generate diet plan', details: String(error) });
+  }
+});
+
 function buildRequestPayload({ message, memory, profile }) {
   const model = process.env.GROQ_MODEL ?? 'llama3-8b-8192';
 

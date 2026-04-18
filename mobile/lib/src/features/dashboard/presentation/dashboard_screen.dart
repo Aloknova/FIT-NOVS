@@ -465,20 +465,32 @@ class _MetricPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final hasData = value != '--';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: hasData 
+            ? cs.surfaceContainerHighest.withValues(alpha: 0.3)
+            : cs.surfaceContainerHighest.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: hasData 
+              ? cs.outlineVariant.withValues(alpha: 0.3)
+              : cs.outlineVariant.withValues(alpha: 0.1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: cs.primary),
+              Icon(
+                icon, 
+                size: 16, 
+                color: hasData ? cs.primary : cs.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -494,7 +506,7 @@ class _MetricPill extends StatelessWidget {
             value,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: cs.onSurface,
+                  color: hasData ? cs.onSurface : cs.onSurfaceVariant.withValues(alpha: 0.3),
                 ),
           ),
         ],
