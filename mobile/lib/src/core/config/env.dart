@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class AppEnv {
   static const appName = String.fromEnvironment(
     'APP_NAME',
