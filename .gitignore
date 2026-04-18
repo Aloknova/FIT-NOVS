@@ -1,0 +1,28 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.packages
+build/
+
+# Android / iOS generated artifacts
+android/
+ios/
+macos/
+linux/
+windows/
+web/
+
+# Node
+node_modules/
+
+# IDE
+.idea/workspace.xml
+.vscode/
+

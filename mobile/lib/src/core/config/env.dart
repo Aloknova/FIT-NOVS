@@ -1,0 +1,48 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+
+class AppEnv {
+  static const appName = String.fromEnvironment(
+    'APP_NAME',
+    defaultValue: 'FitNova',
+  );
+
+  static const appEnv = String.fromEnvironment(
+    'APP_ENV',
+    defaultValue: 'development',
+  );
+
+  static String get apiBaseUrl {
+    const defaultUrl = String.fromEnvironment('API_BASE_URL', defaultValue: '');
+    if (defaultUrl.isNotEmpty) return defaultUrl;
+    
+    // Fallback for emulators
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8080';
+    }
+    return 'http://localhost:8080';
+  }
+
+  static const supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: '',
+  );
+
+  static const supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: '',
+  );
+
+  static const googleOAuthRedirectUrl = String.fromEnvironment(
+    'GOOGLE_OAUTH_REDIRECT_URL',
+    defaultValue: 'com.fitnova.app://login-callback/',
+  );
+
+  static const freeTierAiDailyLimit = int.fromEnvironment(
+    'FREE_TIER_AI_DAILY_LIMIT',
+    defaultValue: 10,
+  );
+
+  static bool get isSupabaseConfigured =>
+      supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+}
