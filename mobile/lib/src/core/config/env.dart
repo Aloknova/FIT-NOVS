@@ -19,12 +19,12 @@ class AppEnv {
 
   static const supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: '',
+    defaultValue: 'https://ntyqnunwcufqfapkxlwk.supabase.co',
   );
 
   static const supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: '',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50eXFudW53Y3VmcWZhcGt4bHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDc0MzcsImV4cCI6MjA5MTY4MzQzN30.GY4Hc5GPKuPa4Uo08Nk1YrT1WzZz6Fz2IOQT7OmuHnY',
   );
 
   static const googleOAuthRedirectUrl = String.fromEnvironment(
