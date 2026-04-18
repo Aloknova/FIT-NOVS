@@ -34,7 +34,7 @@ class AiRepository {
     List<String> memory = const [],
     String provider = 'groq',
   }) async {
-    final url = Uri.parse('${AppEnv.apiBaseUrl}/api/ai/chat');
+    final url = Uri.parse('${AppEnv.apiBaseUrl}/ai/chat');
     AppLogger.action(
       'ai_request_started',
       details: {

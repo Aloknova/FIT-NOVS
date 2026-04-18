@@ -63,7 +63,7 @@ class DietRepository {
       };
     } else {
       final response = await http.post(
-        Uri.parse('${AppEnv.apiBaseUrl}/api/ai/diet-plan'),
+        Uri.parse('${AppEnv.apiBaseUrl}/ai/diet-plan'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'userId': userId,
